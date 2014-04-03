@@ -945,7 +945,9 @@ public class MusicPlaybackService extends Service {
                     mPlayPos = -1;
                     closeCursor();
                 } else {
-                    if (mPlayPos >= mPlayListLen) {
+                    if (mShuffleMode != SHUFFLE_NONE) {
+                        mPlayPos = getNextPosition(true);
+                    } else if (mPlayPos >= mPlayListLen) {
                         mPlayPos = 0;
                     }
                     final boolean wasPlaying = isPlaying();
@@ -1967,6 +1969,8 @@ public class MusicPlaybackService extends Service {
 
         mAudioManager.registerMediaButtonEventReceiver(new ComponentName(getPackageName(),
                 MediaButtonIntentReceiver.class.getName()));
+
+        setNextTrack();
 
         if (mPlayer.isInitialized()) {
             final long duration = mPlayer.duration();

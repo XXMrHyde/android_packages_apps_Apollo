@@ -543,6 +543,20 @@ public final class MusicUtils {
     }
 
     /**
+     * Plays songs by an artist.
+     *
+     * @param context The {@link Context} to use.
+     * @param artistId The artist Id.
+     * @param position Specify where to start.
+     */
+    public static void playArtist(final Context context, final long artistId, int position) {
+        final long[] artistList = getSongListForArtist(context, artistId);
+        if (artistList != null) {
+            playAll(context, artistList, position, false);
+        }
+    }
+
+    /**
      * @param context The {@link Context} to use.
      * @param id The ID of the genre.
      * @return The song list for an genre.
@@ -751,6 +765,20 @@ public final class MusicUtils {
         return id;
     }
 
+    /**
+     * Plays songs from an album.
+     *
+     * @param context The {@link Context} to use.
+     * @param albumId The album Id.
+     * @param position Specify where to start.
+     */
+    public static void playAlbum(final Context context, final long albumId, int position) {
+        final long[] albumList = getSongListForAlbum(context, albumId);
+        if (albumList != null) {
+            playAll(context, albumList, position, false);
+        }
+    }
+
     /*  */
     public static void makeInsertItems(final long[] ids, final int offset, int len, final int base) {
         if (offset + len > ids.length) {
@@ -833,6 +861,24 @@ public final class MusicUtils {
         }
         final String message = context.getResources().getQuantityString(
                 R.plurals.NNNtrackstoplaylist, numinserted, numinserted);
+        AppMsg.makeText((Activity)context, message, AppMsg.STYLE_CONFIRM).show();
+    }
+
+    /**
+     * Removes a single track from a given playlist
+     * @param context The {@link Context} to use.
+     * @param id The id of the song to remove.
+     * @param playlistId The id of the playlist being removed from.
+     */
+    public static void removeFromPlaylist(final Context context, final long id,
+            final long playlistId) {
+        final Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistId);
+        final ContentResolver resolver = context.getContentResolver();
+        resolver.delete(uri, Playlists.Members.AUDIO_ID + " = ? ", new String[] {
+            Long.toString(id)
+        });
+        final String message = context.getResources().getQuantityString(
+                R.plurals.NNNtracksfromplaylist, 1, 1);
         AppMsg.makeText((Activity)context, message, AppMsg.STYLE_CONFIRM).show();
     }
 
